@@ -27,7 +27,7 @@ jobs:
         with:
           fetch-depth: 1
       - name: Install Dependencies
-        run: npm ci
+        run: npm ci --force
       - name: Build client
         run: npm run build:client
       - name: Generate Documentation
