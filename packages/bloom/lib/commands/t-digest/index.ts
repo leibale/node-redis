@@ -1,18 +1,32 @@
 import { RedisCommandArguments } from '@redis/client/dist/lib/commands';
 import * as ADD from './ADD';
+export type { ADD };
 import * as BYRANK from './BYRANK';
+export type { BYRANK };
 import * as BYREVRANK from './BYREVRANK';
+export type { BYREVRANK };
 import * as CDF from './CDF';
+export type { CDF };
 import * as CREATE from './CREATE';
+export type { CREATE };
 import * as INFO from './INFO';
+export type { INFO };
 import * as MAX from './MAX';
+export type { MAX };
 import * as MERGE from './MERGE';
+export type { MERGE };
 import * as MIN from './MIN';
+export type { MIN };
 import * as QUANTILE from './QUANTILE';
+export type { QUANTILE };
 import * as RANK from './RANK';
+export type { RANK };
 import * as RESET from './RESET';
+export type { RESET };
 import * as REVRANK from './REVRANK';
+export type { REVRANK };
 import * as TRIMMED_MEAN from './TRIMMED_MEAN';
+export type { TRIMMED_MEAN };
 
 export default {
     ADD,

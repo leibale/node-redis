@@ -19,4 +19,8 @@ export { GeoReplyWith } from './lib/commands/generic-transformers';
 
 export * from './lib/errors';
 
-export { SetOptions } from "./lib/commands/SET";
+export { SetOptions } from './lib/commands/SET';
+
+export type * from './lib/client/commands';
+export type * from './lib/cluster/commands';
+

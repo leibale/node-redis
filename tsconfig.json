@@ -5,5 +5,16 @@
   },
   "include": [
     "./index.ts"
-  ]
+  ],
+  "typedocOptions": {
+    "entryPoints": [
+      "./index.ts",
+      "./packages/*"
+    ],
+    "exclude": [
+      "./packages/test-utils"
+    ],
+    "entryPointStrategy": "packages",
+    "out": "documentation"
+  }
 }

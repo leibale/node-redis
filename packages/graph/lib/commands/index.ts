@@ -1,12 +1,21 @@
 import * as CONFIG_GET from './CONFIG_GET';
+export type { CONFIG_GET };
 import * as CONFIG_SET from './CONFIG_SET';;
+export type { CONFIG_SET };
 import * as DELETE from './DELETE';
+export type { DELETE };
 import * as EXPLAIN from './EXPLAIN';
+export type { EXPLAIN };
 import * as LIST from './LIST';
+export type { LIST };
 import * as PROFILE from './PROFILE';
+export type { PROFILE };
 import * as QUERY from './QUERY';
+export type { QUERY };
 import * as RO_QUERY from './RO_QUERY';
+export type { RO_QUERY };
 import * as SLOWLOG from './SLOWLOG';
+export type { SLOWLOG };
 import { RedisCommandArgument, RedisCommandArguments } from '@redis/client/dist/lib/commands';
 
 export default {

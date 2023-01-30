@@ -1,15 +1,26 @@
 
 import * as ADD from './ADD';
+export type { ADD };
 import * as ADDNX from './ADDNX';
+export type { ADDNX };
 import * as COUNT from './COUNT';
+export type { COUNT };
 import * as DEL from './DEL';
+export type { DEL };
 import * as EXISTS from './EXISTS';
+export type { EXISTS };
 import * as INFO from './INFO';
+export type { INFO };
 import * as INSERT from './INSERT';
+export type { INSERT };
 import * as INSERTNX from './INSERTNX';
+export type { INSERTNX };
 import * as LOADCHUNK from './LOADCHUNK';
+export type { LOADCHUNK };
 import * as RESERVE from './RESERVE';
+export type { RESERVE };
 import * as SCANDUMP from './SCANDUMP';
+export type { SCANDUMP };
 import { pushVerdictArguments } from '@redis/client/dist/lib/commands/generic-transformers';
 import { RedisCommandArguments } from '@redis/client/dist/lib/commands';
 
