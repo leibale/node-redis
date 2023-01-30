@@ -9,12 +9,5 @@
   "exclude": [
     "./lib/test-utils.ts",
     "./lib/**/*.spec.ts"
-  ],
-  "typedocOptions": {
-    "entryPoints": [
-      "./lib"
-    ],
-    "entryPointStrategy": "expand",
-    "out": "../../documentation/time-series"
-  }
+  ]
 }
