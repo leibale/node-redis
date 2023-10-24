@@ -10,13 +10,13 @@ await client.get(client.commandOptions({ returnBuffers: true }), 'key'); // `Buf
 ```
 
 This has a couple of flaws:
-1. The argument types are checked in runtime, which is a performance hit.
-2. Code suggestions are less readable/usable, due to "function overloading".
-3. Overall, "user code" is not as readable as it could be.
+1. The argument types are checked at runtime, which is less performant.
+2. Due to function overload, code suggestions are less readable, and hence less usable.
+3. Use code as a result, it not as readable as it could be.
 
 ### The new API for v5
 
-With the new API, instead of passing the options directly to the commands we use a "proxy client" to store them:
+With the new API, we use a "proxy client" rather than passing options directly to the commands:
 
 ```javascript
 await client.get('key'); // `string | null`
@@ -30,17 +30,17 @@ const proxyClient = client.withCommandOptions({
 await proxyClient.get('key'); // `Buffer | null`
 ```
 
-for more information, see the [Command Options guide](./command-options.md).
+For more information, see the [Command Options guide](./command-options.md).
 
 ## Quit VS Disconnect
 
-The `QUIT` command has been deprecated in Redis 7.2 and should now also be considered deprecated in Node-Redis. Instead of sending a `QUIT` command to the server, the client can simply close the network connection.
+The `QUIT` command has been deprecated in [Redis 7.2](https://github.com/redis/redis/releases/7.2.0) and now, Node-Redis. Instead of sending a `QUIT` command to the server, the client should close the network connection.
 
-`client.QUIT/quit()` is replaced by `client.close()`. and, to avoid confusion, `client.disconnect()` has been renamed to `client.destroy()`.
+`client.QUIT/quit()` is superceded by `client.close()`. To avoid confusion, `client.disconnect()` has been renamed to `client.destroy()`.
 
 ## Scan Iterators
 
-Iterator commands like `SCAN`, `HSCAN`, `SSCAN`, and `ZSCAN` return collections of elements (depending on the data type). However, v4 iterators loop over these collections and yield individual items:
+In v5, Iterator commands like `SCAN`, `HSCAN`, `SSCAN`, and `ZSCAN` return collections of elements (depending on the data type). Previously, in v4 iterators loop over these collections and yield individual items:
 
 ```javascript
 for await (const key of client.scanIterator()) {
@@ -48,7 +48,7 @@ for await (const key of client.scanIterator()) {
 }
 ```
 
-This mismatch can be awkward and makes "multi-key" commands like `MGET`, `UNLINK`, etc. pointless. So, in v5 the iterators now yield a collection instead of an element:
+This mismatch can be awkward making "multi-key" commands like `MGET`, `UNLINK`, etc. pointless. In v5 the iterators now yield a collection instead of an element:
 
 ```javascript
 for await (const keys of client.scanIterator()) {
@@ -57,11 +57,11 @@ for await (const keys of client.scanIterator()) {
 }
 ```
 
-for more information, see the [Scan Iterators guide](./scan-iterators.md).
+For more information, see the [Scan Iterators guide](./scan-iterators.md).
 
 ## Legacy Mode
 
-In the previous version, you could access "legacy" mode by creating a client and passing in `{ legacyMode: true }`. Now, you can create one off of an existing client by calling the `.legacy()` function. This allows easier access to both APIs and enables better TypeScript support.
+In v4, you could access "legacy" mode by creating a client and passing in `{ legacyMode: true }`. As of v5, you can create one off of an existing client by calling the `.legacy()` function. This allows easier access to both APIs and enables better TypeScript support.
 
 ```javascript
 // use `client` for the current API
@@ -77,11 +77,15 @@ legacyClient.set('key', 'value', (err, reply) => {
 
 ## Isolation Pool
 
-[TODO](./blocking-commands.md).
+While most redis commands are non-blocking, there are commands that intentionally block. Those commands should be run on their own *isolated* connection, as explained in depth [in this document](./blocking-commands.md).
+
+Previously, commands were sent as below. Note how the pool itself was blocking.
 
 ```javascript
 await client.get(client.commandOptions({ isolated: true }), 'key');
 ```
+
+The following is a full example in v5. As of v5 a separate, blocking pool is created in order to ensure support for isolating these blocking commands.
 
 ```javascript
 await client.sendCommand(['GET', 'key']);
@@ -105,7 +109,7 @@ await clusterPool.use(client => client.blPop());
 
 ## Cluster `MULTI`
 
-In v4, `cluster.multi()` did not support executing commands on replicas, even if they were readonly.
+In v4, `cluster.multi()` did not support executing commands on replicas.
 
 ```javascript
 // this might execute on a replica, depending on configuration
@@ -117,7 +121,7 @@ await cluster.multi()
   .exec();
 ```
 
-To support executing commands on replicas, `cluster.multi().addCommand` now requires `isReadonly` as the second argument, which matches the signature of `cluster.sendCommand`:
+To support executing commands on replicas, `cluster.multi().addCommand` now requires `isReadonly` as the second argument, aligning with the signature of `cluster.sendCommand`:
 
 ```javascript
 await cluster.multi()
