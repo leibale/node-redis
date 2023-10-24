@@ -1,6 +1,7 @@
 .idea/
 .nyc_output/
 .vscode/
+*.bak
 coverage/
 dist/
 node_modules/

@@ -36,7 +36,7 @@ For more information, see the [Command Options guide](./command-options.md).
 
 The `QUIT` command has been deprecated in [Redis 7.2](https://github.com/redis/redis/releases/7.2.0) and now, Node-Redis. Instead of sending a `QUIT` command to the server, the client should close the network connection.
 
-`client.QUIT/quit()` is superceded by `client.close()`. To avoid confusion, `client.disconnect()` has been renamed to `client.destroy()`.
+`client.QUIT/quit()` is superseded by `client.close()`. To avoid confusion, `client.disconnect()` has been renamed to `client.destroy()`.
 
 ## Scan Iterators
 
