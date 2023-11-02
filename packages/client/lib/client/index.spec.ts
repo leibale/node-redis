@@ -14,6 +14,8 @@ import { RESP_TYPES } from '../RESP/decoder';
 import { NumberReply } from '../RESP/types';
 import { SortedSetMember } from '../commands/generic-transformers';
 
+import {version} from '../../package.json';
+
 export const SQUARE_SCRIPT = defineScript({
   SCRIPT:
     `local number = redis.call('GET', KEYS[1])
@@ -118,6 +120,44 @@ describe('Client', () => {
     clientOptions: {
       name: 'name'
     }
+  });
+
+  testUtils.testWithClient('should set default lib name and version', async client => {
+    const clientInfo = await client.clientInfo();
+
+    assert.equal(clientInfo.libName, 'node-redis');
+    assert.equal(clientInfo.libVer, version);
+  }, {
+    ...GLOBAL.SERVERS.PASSWORD,
+    minimumDockerVersion: [7, 2]
+  });
+
+  testUtils.testWithClient('disable sending lib name and version', async client => {
+    const clientInfo = await client.clientInfo();
+
+    assert.equal(clientInfo.libName, '');
+    assert.equal(clientInfo.libVer, '');
+  }, {
+    ...GLOBAL.SERVERS.PASSWORD,
+    clientOptions: {
+      ...GLOBAL.SERVERS.PASSWORD.clientOptions,
+      disableClientInfo: true
+    },
+    minimumDockerVersion: [7, 2]
+  });
+
+  testUtils.testWithClient('send client name tag', async client => {
+    const clientInfo = await client.clientInfo();
+
+    assert.equal(clientInfo.libName, 'node-redis(test)');
+    assert.equal(clientInfo.libVer, version);
+  }, {
+    ...GLOBAL.SERVERS.PASSWORD,
+    clientOptions: {
+      ...GLOBAL.SERVERS.PASSWORD.clientOptions,
+      clientInfoTag: "test"
+    },
+    minimumDockerVersion: [7, 2]
   });
 
   testUtils.testWithClient('connect, ready and end events', async client => {

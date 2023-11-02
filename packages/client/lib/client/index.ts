@@ -3,7 +3,7 @@ import RedisSocket, { RedisSocketOptions, RedisTlsSocketOptions } from './socket
 import RedisCommandsQueue, { CommandOptions } from './commands-queue';
 import { EventEmitter } from 'node:events';
 import { attachConfig, functionArgumentsPrefix, getTransformReply, scriptArgumentsPrefix } from '../commander';
-import { ClientClosedError, ClientOfflineError, DisconnectsClientError, WatchError } from '../errors';
+import { ClientClosedError, ClientOfflineError, DisconnectsClientError, WatchError, ErrorReply } from '../errors';
 import { URL } from 'node:url';
 import { TcpSocketConnectOpts } from 'node:net';
 import { PubSubType, PubSubListener, PubSubTypeListeners, ChannelListeners } from './pub-sub';
@@ -14,6 +14,8 @@ import HELLO, { HelloOptions } from '../commands/HELLO';
 import { ScanOptions, ScanCommonOptions } from '../commands/SCAN';
 import { RedisLegacyClient, RedisLegacyClientType } from './legacy-mode';
 import { RedisPoolOptions, RedisClientPool } from './pool';
+
+import {version} from '../../package.json';
 
 export interface RedisClientOptions<
   M extends RedisModules = RedisModules,
@@ -69,6 +71,14 @@ export interface RedisClientOptions<
    * TODO
    */
   commandOptions?: CommandOptions<TYPE_MAPPING>;
+  /**
+   * Don't send client info to Redis server
+   */
+  disableClientInfo?: boolean;
+  /**
+   * Tag to append to library name that is sent to the Redis server
+   */
+  clientInfoTag?: string;
 }
 
 type WithCommands<
@@ -350,6 +360,33 @@ export default class RedisClient<
             { asap: true }
           )
         );
+      }
+
+      if (!this._options?.disableClientInfo) {
+        promises.push(
+          this._queue.addCommand(
+            [  'CLIENT', 'SETINFO', 'LIB-VER', version],
+            { asap: true }
+          ).catch(err => {
+            if (!(err instanceof ErrorReply)) {
+              throw err;
+            }
+          })
+        );
+
+        promises.push(
+          this._queue.addCommand(
+            [
+              'CLIENT', 'SETINFO', 'LIB-NAME',
+              this._options?.clientInfoTag ? `node-redis(${this._options.clientInfoTag})` : 'node-redis'
+            ],
+            { asap: true }
+          ).catch(err => {
+            if (!(err instanceof ErrorReply)) {
+              throw err;
+            }
+          })
+       );
       }
 
       if (this._options?.RESP) {
