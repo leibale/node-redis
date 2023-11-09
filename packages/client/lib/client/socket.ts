@@ -17,7 +17,7 @@ export interface RedisSocketCommonOptions {
   /**
    * Toggle [`keep-alive`](https://nodejs.org/api/net.html#net_socket_setkeepalive_enable_initialdelay)
    */
-  keepAlive?: number | false;
+  redisKeepAlive?: number | false;
   /**
    * When the socket closes unexpectedly (without calling `.close()`/`.destroy()`), the client uses `reconnectStrategy` to decide what to do. The following values are supported:
    * 1. `false` -> do not reconnect, close the client and flush the command queue.
@@ -28,15 +28,15 @@ export interface RedisSocketCommonOptions {
   reconnectStrategy?: false | number | ((retries: number, cause: Error) => false | Error | number);
 }
 
-type RedisNetSocketOptions = Partial<net.SocketConnectOpts> & {
+export interface RedisNetConnectOpts extends Partial<net.TcpNetConnectOpts>, Partial<net.IpcNetConnectOpts>, RedisSocketCommonOptions {
   tls?: false;
 };
 
-export interface RedisTlsSocketOptions extends tls.ConnectionOptions {
+export interface RedisTlsSocketOptions extends Partial<tls.ConnectionOptions>, RedisSocketCommonOptions {
   tls: true;
-}
+};
 
-export type RedisSocketOptions = RedisSocketCommonOptions & (RedisNetSocketOptions | RedisTlsSocketOptions);
+export type RedisSocketOptions = RedisNetConnectOpts | RedisTlsSocketOptions
 
 interface CreateSocketReturn<T> {
   connectEvent: string;
@@ -54,7 +54,7 @@ export default class RedisSocket extends EventEmitter {
     }
 
     options.connectTimeout ??= 5000;
-    options.keepAlive ??= 5000;
+    options.redisKeepAlive ??= 5000;
     options.noDelay ??= true;
 
     return options;
@@ -186,7 +186,7 @@ export default class RedisSocket extends EventEmitter {
           socket
             .setTimeout(0)
             // https://github.com/nodejs/node/issues/31663
-            .setKeepAlive(this._options.keepAlive !== false, this._options.keepAlive || 0)
+            .setKeepAlive(this._options.redisKeepAlive !== false, this._options.redisKeepAlive || 0)
             .off('error', reject)
             .once('error', (err: Error) => this._onSocketError(err))
             .once('close', hadError => {
