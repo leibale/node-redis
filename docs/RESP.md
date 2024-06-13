@@ -33,6 +33,10 @@ By default, each type is mapped to the first option in the lists below. To chang
 
 > NOTE: the first type is the default type
 
+For some Redis modules, there are detailed migration guides that help inform as to the changes between RESP2 and RESP3. These are listed below:
+
+- [RedisJSON](https://github.com/RedisJSON/RedisJSON/blob/master/docs/docs/resp3.md)
+
 ### Map keys and Set members
 
 When decoding a Map to `Map | object` or a Set to `Set`, keys and members of type "Simple String" or "Blob String" will be decoded as `string`s which enables lookups by value, ignoring type mapping. If you want them as `Buffer`s, decode them as `Array`s instead.
