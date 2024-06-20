@@ -1,0 +1,2 @@
+#!js api_version=1.0 name=lib1
+redis.registerFunction('foo', ()=>{{return 'bar'}})
